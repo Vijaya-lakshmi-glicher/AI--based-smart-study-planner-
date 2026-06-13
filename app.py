@@ -1,14 +1,37 @@
-from datetime import datetime
+import streamlit as st
+from datetime import date
 
-print("===== AI-Based Smart Study Planner =====")
+st.set_page_config(page_title="AI Study Planner", page_icon="📚")
+
+st.title("📚 AI-Based Smart Study Planner")
+
+num_subjects = st.number_input(
+    "Number of Subjects",
+    min_value=1,
+    max_value=10,
+    value=1
+)
 
 subjects = []
-n = int(input("Enter number of subjects: "))
 
-for i in range(n):
-    name = input(f"\nEnter Subject {i+1} Name: ")
-    exam_date = input("Enter Exam Date (YYYY-MM-DD): ")
-    difficulty = input("Difficulty (Easy/Medium/Hard): ")
+for i in range(int(num_subjects)):
+    st.subheader(f"Subject {i+1}")
+
+    name = st.text_input(
+        f"Subject Name {i+1}",
+        key=f"name_{i}"
+    )
+
+    exam_date = st.date_input(
+        f"Exam Date {i+1}",
+        key=f"date_{i}"
+    )
+
+    difficulty = st.selectbox(
+        f"Difficulty {i+1}",
+        ["Easy", "Medium", "Hard"],
+        key=f"diff_{i}"
+    )
 
     subjects.append({
         "name": name,
@@ -16,40 +39,36 @@ for i in range(n):
         "difficulty": difficulty
     })
 
-study_hours = int(input("\nEnter available study hours per day: "))
+study_hours = st.number_input(
+    "Available Study Hours Per Day",
+    min_value=1,
+    max_value=24,
+    value=4
+)
 
-today = datetime.today()
+if st.button("Generate Study Plan"):
 
-for subject in subjects:
-    exam = datetime.strptime(subject["exam_date"], "%Y-%m-%d")
-    days_left = (exam - today).days
+    today = date.today()
 
-    if subject["difficulty"].lower() == "hard":
-        priority = 3
-    elif subject["difficulty"].lower() == "medium":
-        priority = 2
-    else:
-        priority = 1
+    st.header("📅 Study Plan")
 
-    subject["days_left"] = days_left
-    subject["priority"] = priority
+    for subject in subjects:
 
-subjects.sort(key=lambda x: (x["days_left"], -x["priority"]))
+        days_left = (subject["exam_date"] - today).days
 
-print("\n===== SMART STUDY TIMETABLE =====")
+        if subject["difficulty"] == "Hard":
+            recommended_hours = study_hours * 0.5
+        elif subject["difficulty"] == "Medium":
+            recommended_hours = study_hours * 0.3
+        else:
+            recommended_hours = study_hours * 0.2
 
-for subject in subjects:
-    if subject["priority"] == 3:
-        hours = study_hours * 0.5
-    elif subject["priority"] == 2:
-        hours = study_hours * 0.3
-    else:
-        hours = study_hours * 0.2
+        st.write("---")
+        st.write(f"### 📖 {subject['name']}")
+        st.write(f"📅 Exam Date: {subject['exam_date']}")
+        st.write(f"⏳ Days Left: {days_left}")
+        st.write(f"🎯 Difficulty: {subject['difficulty']}")
+        st.write(f"🕒 Recommended Study Hours: {recommended_hours:.1f} hrs/day")
 
-    print(f"\nSubject      : {subject['name']}")
-    print(f"Exam Date    : {subject['exam_date']}")
-    print(f"Days Left    : {subject['days_left']}")
-    print(f"Difficulty   : {subject['difficulty']}")
-    print(f"Study Hours  : {hours:.1f} hrs/day")
-
-print("\nBest of Luck for Your Exams!")
+    st.success("Study Plan Generated Successfully!")
+    st.balloons()

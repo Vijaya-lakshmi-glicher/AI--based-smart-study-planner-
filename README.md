@@ -1,1 +1,1 @@
-# AI--based-smart-study-planner-
+An AI-Based Smart Study Planner is an intelligent application designed to help students prepare effectively for exams. The system uses Artificial Intelligence (AI) to create personalized study schedules based on exam dates, subject difficulty, available study hours, and student preferences. It helps students manage their time efficiently, reduce stress, and improve academic performance.
